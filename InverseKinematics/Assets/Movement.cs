@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    public float speed = 5.0f;
+    public float speed = 8.0f;
+    public float sensitivity = 2.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -16,19 +17,18 @@ public class Movement : MonoBehaviour
     void Update()
     {
         // Translation
-        float horizontalMovementTrig = Input.GetAxisRaw("Horizontal") * Mathf.Sin(transform.rotation.y);
-        float verticalMovementTrig = Input.GetAxisRaw("Vertical") * Mathf.Cos(transform.rotation.y);
-        Vector2 movement = new Vector2(horizontalMovementTrig, verticalMovementTrig);
-        Vector3 velocity = new Vector3(movement.normalized.x, 0.0f, movement.normalized.y) * speed * Time.deltaTime;
+        Vector2 movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Horizontal"));
+        float xVel = movement.normalized.x * Mathf.Cos(transform.eulerAngles.y);
+        float yVel = movement.normalized.y * Mathf.Sin(transform.eulerAngles.y);
+        Debug.Log("Rot: " + transform.eulerAngles.y);
+        Vector3 velocity = new Vector3(xVel, 0.0f, yVel) * speed * Time.deltaTime;
         transform.position += velocity;
 
         // Rotates the whole player when looking left/right
-        float mouseXInput = Input.GetAxis("Mouse X");
-        transform.Rotate(new Vector3(0.0f, mouseXInput, 0.0f));
+        transform.Rotate(new Vector3(0.0f, Input.GetAxis("Mouse X") * sensitivity, 0.0f));
 
         // Rotates the head of the player when looking up/down
-        float mouseYInput = Input.GetAxis("Mouse Y");
         Transform headTransform = transform.Find("Head");
-        headTransform.Rotate(new Vector3(0.0f, 0.0f, mouseYInput));
+        headTransform.Rotate(new Vector3(-Input.GetAxis("Mouse Y") * sensitivity, 0.0f, 0.0f));
     }
 }
