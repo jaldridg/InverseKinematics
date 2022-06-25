@@ -5,7 +5,7 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 {
     public float speed = 8.0f;
-    public float sensitivity = 2.0f;
+    public float sensitivity = 4.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -17,9 +17,16 @@ public class Movement : MonoBehaviour
     void Update()
     {
         // Translation
-        Vector2 movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-        Vector3 velocity = new Vector3(movement.normalized.x, 0.0f, movement.normalized.y) * speed * Time.deltaTime;
-        transform.position += Quaternion.AngleAxis(transform.eulerAngles.y, Vector3.up).eulerAngles;
+        Vector3 movement = new Vector3(Input.GetAxisRaw("Horizontal"), 0.0f, Input.GetAxisRaw("Vertical"));
+        // Rotate movement based on which way the player is facing
+        movement = Quaternion.AngleAxis(transform.eulerAngles.y, Vector3.up) * movement;
+        Vector3 velocity = new Vector3(movement.normalized.x, 0.0f, movement.normalized.z) * speed * Time.deltaTime;
+
+        if (Input.GetKey(KeyCode.LeftShift)) {
+            transform.position += velocity * 0.5f;
+        } else {
+            transform.position += velocity;
+        }
 
         // Rotates the whole player when looking left/right
         transform.eulerAngles += Vector3.up * Input.GetAxis("Mouse X") * sensitivity;
