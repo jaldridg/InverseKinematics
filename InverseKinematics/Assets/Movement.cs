@@ -17,18 +17,15 @@ public class Movement : MonoBehaviour
     void Update()
     {
         // Translation
-        Vector2 movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Horizontal"));
-        float xVel = movement.normalized.x * Mathf.Cos(transform.eulerAngles.y);
-        float yVel = movement.normalized.y * Mathf.Sin(transform.eulerAngles.y);
-        Debug.Log("Rot: " + transform.eulerAngles.y);
-        Vector3 velocity = new Vector3(xVel, 0.0f, yVel) * speed * Time.deltaTime;
-        transform.position += velocity;
+        Vector2 movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        Vector3 velocity = new Vector3(movement.normalized.x, 0.0f, movement.normalized.y) * speed * Time.deltaTime;
+        transform.position += Quaternion.AngleAxis(transform.eulerAngles.y, Vector3.up).eulerAngles;
 
         // Rotates the whole player when looking left/right
-        transform.Rotate(new Vector3(0.0f, Input.GetAxis("Mouse X") * sensitivity, 0.0f));
+        transform.eulerAngles += Vector3.up * Input.GetAxis("Mouse X") * sensitivity;
 
         // Rotates the head of the player when looking up/down
         Transform headTransform = transform.Find("Head");
-        headTransform.Rotate(new Vector3(-Input.GetAxis("Mouse Y") * sensitivity, 0.0f, 0.0f));
+        headTransform.eulerAngles += Vector3.left * Input.GetAxis("Mouse Y") * sensitivity;
     }
 }
